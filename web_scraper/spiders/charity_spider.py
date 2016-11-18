@@ -15,13 +15,9 @@ class CharitySpider(scrapy.Spider):
         results = sel.css('.result')
         cnt = 0
         for result in results:
-            # charity_summary = {
-            #     'title': result.xpath('./h2/a/text()').extract(),
-            #     'town-county': result.css('.town-county').xpath('./text()').extract()
-            # }
             page_url = result.xpath('./h2/a/@href').extract()[0]
             charity_page_url = self.base_url + page_url
-            if cnt < 2:
+            if cnt < 30:
                 cnt += 1
                 print('DETAIL PAGE:', charity_page_url)
                 yield scrapy.Request(charity_page_url, callback=self.parse_details)
@@ -48,7 +44,10 @@ class CharitySpider(scrapy.Spider):
         paragraph = [x.strip() for x in paragraph]
 
         if len(paragraph) == 2:
-            charity_info['register_id'] = paragraph[0]
+            register_ids = paragraph[0].split(', ')
+            charity_info['register_id'] = register_ids[0]
+            if len(register_ids) > 1:
+                charity_info['register_id_alt'] = register_ids[1]
             charity_info['town-county'] = paragraph[1]
         else:
             charity_info['town-county'] = paragraph[0]

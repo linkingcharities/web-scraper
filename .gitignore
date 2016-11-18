@@ -93,3 +93,6 @@ ENV/
 
 # Output
 output/
+
+# Charities output
+charities.json
